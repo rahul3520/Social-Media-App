@@ -45,6 +45,54 @@ app.post('/add/user',async(req,response) => {
     
 });
 
+//get all users
+app.get('/get/users', async(request,response) => {
+
+    try{
+
+        const result = await User.find();
+
+        if(!result){
+
+            return response.status(404).json({message: "No users found"});
+        }
+
+        return response.status(200).send(result);
+
+
+    }catch(error){
+
+        console.log(error.message);
+        return response.status(500).send({message: error.message})
+    }
+});
+
+//find user by name
+app.get('/get/userByName', async(request,response) => {
+
+    try{
+
+        if(!request.body.userName){
+            return response.status(400).send({messsage: "user name is a required field!!!"});
+        }
+
+        const result = await User.findOne({userName: request.body.userName});
+
+        if(!result){
+
+            return response.status(404).json({message: "No users found by the given name!"});
+        }
+
+        return response.status(200).send(result);
+
+
+    }catch(error){
+
+        console.log(error.message);
+        return response.status(500).send({message: error.message})
+    }
+});
+
 //update user in existing user collection
 app.put('/update/user/:userId', async(request,response) => {
 
@@ -115,6 +163,33 @@ app.post('/add/discussion', async(request,response) => {
         const newDiscuss = await Discuss.create(discuss);
 
         return response.status(201).send(newDiscuss);
+
+    }catch(error){
+
+        console.log(error.message);
+        return response.status(500).send({message: error.message});
+    }
+}
+);
+
+//update discussion posted by user
+app.put('/update/discussion/:discussionId', async(request,response) => {
+
+    try{
+
+        if(!request.body.userEmail){
+            return response.status(400).send({message: "user email is a required field!"});
+        }
+
+        const { discussionId } = request.params;
+
+        const result = await Discuss.findByIdAndUpdate(discussionId,request.body);
+
+        if(!result){
+            return response.status(404).json({message: "discussion not found"});
+        }
+
+        return response.status(201).send({message:"discussion updated successfully!"});
 
     }catch(error){
 
