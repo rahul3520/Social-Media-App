@@ -74,6 +74,28 @@ app.put('/update/user/:userId', async(request,response) => {
     }
 });
 
+//delete existing user from user collection
+app.delete('/delete/user/:userId', async(request,response) => {
+
+    try{
+        const { userId } = request.params;
+
+        const result = await User.findByIdAndDelete(userId);
+
+        if(!result){
+
+            return response.status(404).json({message: "User not found !!!"});
+        }
+
+        return response.status(200).send({message:"User deleted successfully"});
+
+    }catch(error){
+
+        console.log(error.message);
+        return response.status(500).send({message: error.message});
+    }
+}); 
+
 //user adding a discussion to collection discussion
 app.post('/add/discussion', async(request,response) => {
 
